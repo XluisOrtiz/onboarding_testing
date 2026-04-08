@@ -2,42 +2,36 @@ name: Update Visual Product Map
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Se ejecuta automáticamente todos los días a media noche
-  workflow_dispatch:      # Esto activa el botón "Run workflow" para que lo pruebes ya mismo
+    - cron: '0 0 * * *' # Se ejecuta automáticamente a las 12:00 AM
+  workflow_dispatch:      # Permite ejecución manual desde la pestaña Actions
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Descarga el código de tu repositorio
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Configura Python en la máquina virtual
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      # 3. Instala las librerías necesarias
       - name: Install dependencies
         run: |
-          pip install sharepy pandas openpyxl requests
+          pip install Office365-REST-Python-Client pandas openpyxl
 
-      # 4. Ejecuta el script de Python con tus credenciales seguras
       - name: Run Generator
         env:
           SP_USERNAME: ${{ secrets.SP_USERNAME }}
           SP_PASSWORD: ${{ secrets.SP_PASSWORD }}
         run: python generate_map.py
 
-      # 5. Guarda los cambios (el nuevo PRODUCT_MAP.md) de vuelta en tu repo
       - name: Commit and Push changes
         run: |
           git config --global user.name 'ProductMapBot'
           git config --global user.email 'bot@intel.com'
           git add PRODUCT_MAP.md
-          # Solo hace commit si hubo cambios, para evitar errores
           git commit -m "Auto-update Product Map from SharePoint" || exit 0
           git push
