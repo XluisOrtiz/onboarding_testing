@@ -2,10 +2,10 @@ name: Update Visual Product Map
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Corre diario a medianoche
-  workflow_dispatch:      # Permite botón manual
+    - cron: '0 0 * * *' # Corre automáticamente cada medianoche
+  workflow_dispatch:      # Permite el botón manual en la pestaña Actions
 
-# ESTO ES LO MÁS IMPORTANTE PARA EL ERROR DE PERMISOS
+# Permisos necesarios para que el bot pueda escribir en el repositorio
 permissions:
   contents: write
 
@@ -34,8 +34,9 @@ jobs:
 
       - name: Commit and Push changes
         run: |
-          git config --global user.name 'ProductMapBot'
-          git config --global user.email 'bot@intel.com'
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add README.md
-          git commit -m "Auto-update Product Map from SharePoint" || exit 0
-          git push
+          # El comando siguiente evita que el flujo falle si no hay cambios en el Excel
+          git commit -m "Auto-update Product Map from SharePoint" || echo "No changes to commit"
+          git push origin main
