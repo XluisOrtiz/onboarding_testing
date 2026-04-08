@@ -2,8 +2,12 @@ name: Update Visual Product Map
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Se ejecuta automáticamente a las 12:00 AM
-  workflow_dispatch:      # Permite ejecución manual desde la pestaña Actions
+    - cron: '0 0 * * *' # Corre diario a medianoche
+  workflow_dispatch:      # Permite botón manual
+
+# ESTO ES LO MÁS IMPORTANTE PARA EL ERROR DE PERMISOS
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -32,6 +36,6 @@ jobs:
         run: |
           git config --global user.name 'ProductMapBot'
           git config --global user.email 'bot@intel.com'
-          git add PRODUCT_MAP.md
+          git add README.md
           git commit -m "Auto-update Product Map from SharePoint" || exit 0
           git push
