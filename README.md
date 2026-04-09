@@ -1,6 +1,6 @@
 # 🗺️ Visual Product Map (Intel Onboarding)
 
-Este mapa se genera localmente. Haz clic en los nodos para ir a la documentación.
+LOCAl map. click on nodes to see documentation.
 
 ```mermaid
 graph LR
