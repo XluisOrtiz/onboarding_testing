@@ -4,7 +4,7 @@ from io import BytesIO
 from office365.runtime.auth.user_credential import UserCredential
 from office365.sharepoint.client_context import ClientContext
 
-# URL de tu OneDrive Intel
+# URL OneDrive
 site_url = "https://intel-my.sharepoint.com/personal/jose_a_navarro_garcia_intel_com"
 # Link de descarga directa
 file_url = f"{site_url}/_layouts/15/download.aspx?sourcedoc=%7B13e1d868-5ec7-410a-a246-b693fc82cac8%7D"
@@ -14,23 +14,23 @@ def generate_onboarding_map():
     password = os.getenv("SP_PASSWORD")
 
     if not username or not password:
-        print("❌ ERROR: No se detectan los SECRETS en GitHub.")
+        print("❌ ERROR: No SECRETS en GitHub.")
         return
 
-    print(f"Iniciando conexión para: {username}")
+    print(f"starting conexión para: {username}")
     user_credentials = UserCredential(username, password)
     ctx = ClientContext(site_url).with_credentials(user_credentials)
 
     try:
-        # Intentamos obtener el archivo
+        # trying to get the file
         response = ctx.web.send_request(file_url)
         response.raise_for_status()
         
-        # Cargar datos
+        # load data
         df = pd.read_excel(BytesIO(response.content))
         print(f"Éxito: Se encontraron {len(df)} filas en el Excel.")
 
-        # Escribir el README
+        # write the README
         with open("README.md", "w", encoding='utf-8') as f:
             f.write("# 🗺️ Visual Product Map (Intel Onboarding)\n\n")
             f.write("```mermaid\n")
@@ -47,7 +47,7 @@ def generate_onboarding_map():
                 if cat_name.lower() in ['nan', 'none', ''] or prod_name.lower() in ['nan', 'none', '']:
                     continue
 
-                # IDs limpios para Mermaid
+                # IDs cleaned para Mermaid
                 cat_id = "".join(e for e in cat_name if e.isalnum())
                 prod_id = "".join(e for e in prod_name if e.isalnum())[:30] + str(index)
 
@@ -56,10 +56,10 @@ def generate_onboarding_map():
                     f.write(f"    click {prod_id} \"{link}\" \"Wiki\"\n")
             
             f.write("```\n")
-        print("✅ README.md generado localmente en el runner.")
+        print("✅ README.md generated.")
 
     except Exception as e:
-        print(f"❌ FALLO TÉCNICO: {str(e)}")
+        print(f"❌ FAIL: {str(e)}")
         # Si esto falla aquí, es el MFA de Intel bloqueando al bot.
 
 if __name__ == "__main__":
